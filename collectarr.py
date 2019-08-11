@@ -1,19 +1,3 @@
-#------------------------------------------------------------------------------
-#
-#	  Automated IMDB List to Plex Collection Script by /u/deva5610
-#
-#		       Created by modifiying the excellent
-#
-#       Automated IMDB Top 250 Plex collection script by /u/SwiftPanda16
-#
-#                         *** USE AT YOUR OWN RISK! ***
-#   *** I AM NOT RESPONSIBLE FOR DAMAGE TO YOUR PLEX SERVER OR LIBRARIES! ***
-#
-#------------------------------------------------------------------------------
-
-#############################################
-##### CODE BELOW - DON'T EDIT BELOW HERE#####
-#############################################
 import os
 import sys
 import json
@@ -21,6 +5,7 @@ import requests
 import time
 import platform
 import plexapi
+import yaml
 from lxml import html
 from plexapi.server import PlexServer
 from tmdbv3api import TMDb
@@ -40,35 +25,14 @@ print(" Python Plex Collections by /u/iRawrz  ")
 print("===================================================================")
 print("\n")
 
-### ConfigParser Python2/3 Support ###
+# Process config.yml
+config = yaml.load(open('config.yml'), Loader=yaml.FullLoader)
+PLEX_URL = config['server']['url']
+PLEX_TOKEN = config['server']['token']
+PLEX_LIBRARIES = config['server']['library'].split(',')
 
-try:
-    # >3.2
-    from configparser import ConfigParser
-except ImportError:
-    # python27
-    # Refer to the older SafeConfigParser as ConfigParser
-    from ConfigParser import SafeConfigParser as ConfigParser
 
-parser = ConfigParser()
-
-# Get config.ini path and check it exists!
-config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.ini')
-didreadreadme = os.path.isfile(config_path)
-if not didreadreadme:
-    print("You need to read the README. Please create a config.ini in the same folder as this program.")
-    print("\n")
-    input("Press Enter to exit, and then go and read the README.")
-    sys.exit()
-
-# Process config.ini
-parser.read(config_path)
-PLEX_URL = parser.get('plex', 'url')
-PLEX_TOKEN = parser.get('plex', 'token')
-MOVIE_LIBRARIES = parser.get('plex', 'library').split(',')
-
-def run_database_sync():	
-	
+def run_database_sync():
 	try:
 		plex = PlexServer(PLEX_URL, PLEX_TOKEN)
 	except:
