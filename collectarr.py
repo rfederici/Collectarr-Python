@@ -33,7 +33,7 @@ def run_database_sync():
     if (input("Update? (y/n): ") == "y"):
         config_update()
     print("\n")
-    print("Modes: Actor(actor), IMDB List(iml), IMDB Movie Page(imp)")
+    print("Modes: Actor(actor), IMDB List(iml), IMDB Movie Page(imp), Deletion mode(d)")
     mode = input("Select Mode: ")
 
     if mode == "actor":
@@ -48,6 +48,33 @@ def run_database_sync():
         add_collection("imdb-list", imdbMovies, collectName)
     elif mode == "imp":
         imdbMovieID = input("Enter IMDB Movie ID")
+    elif mode == "d":
+        collectName = input("Enter Collection Name: ")
+        print("Searching for collection", collectName)
+        results = plex.library.search(title=collectName, libtype="collection")
+        if results:
+            if len(results) > 1:
+                selected_collection = None
+                while not selected_collection:
+                    print("\n")
+                    print("Multiple collections found")
+                    for i, result in enumerate(results):
+                        print(i+1, ")", result.title)
+                    choice = input("Select:")
+                    try:
+                        choice = int(choice)
+                        if choice <= i+1 and choice > 0:
+                            selected_collection = results[choice-1]
+                    except:
+                        print("Invalid entry")
+            elif results:
+                selected_collection = results[0]
+            confirm = input("{} selected. Confirm deletion (y/n):".format(selected_collection.title))
+            if confirm == "y":
+                selected_collection.delete()
+                print("Collection deleted")
+                print("\n")
+
 
     # Search for existing collection
     search = input("Enter Collection Name: ")
