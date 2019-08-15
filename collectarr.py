@@ -28,25 +28,30 @@ PLEX_TOKEN = config['server']['token']
 PLEX_LIBRARIES = config['server']['library'].split(',')
 
 
-def run_database_sync():
+if input("Update Collections from config file? (y/n): ") == "y":
+    config_update()
 
-    if input("Update? (y/n): ") == "y":
-        config_update()
+mode = None
+while not mode == "q":
     print("\n")
-    print("Modes: Actor(actor), IMDB List(iml), IMDB Movie Page(imp), Deletion mode(d)")
+    print("Modes: Actor(a), IMDB List(l), IMDB Movie Page(m), Search(s), Deletion mode(d), Quit(q)")
     mode = input("Select Mode: ")
 
-    if mode == "actor":
-        search = input("SEARCH ACTOR NAME: ")
+    if mode == "a":
+        search = input("Enter Actor Name: ")
         plex_actor_id = search_actor_name(search)
         add_collection("actor", plex_actor_id, search)
-    elif mode == "iml":
+    elif mode == "l":
         collect_name = input("Enter Collection Name: ")
-        imdb_list_id = input("Enter IMDB List ID: ")
-        imdb_list_id = imdb_list_id.strip()
-        imdb_movies = imdb_get_movies(imdb_list_id)
-        add_collection("imdb-list", imdb_movies, collect_name)
-    elif mode == "imp":
+        finished = False
+        while not finished:
+            imdb_list_url = input("Enter IMDB List URL: ")
+            imdb_list_url = imdb_list_url.strip()
+            imdb_movies = imdb_get_movies(imdb_list_url)
+            add_collection("imdb-list", imdb_movies, collect_name)
+            if input("Add another IMDB List? (y/n):") == "n":
+                finished = True
+    elif mode == "m":
         imdb_movie_id = input("Enter IMDB Movie ID")
     elif mode == "d":
         collect_name = input("Search for Collection Name: ")
@@ -73,42 +78,38 @@ def run_database_sync():
             if confirm == "y":
                 selected_collection.delete()
                 print("Collection deleted")
-                print("\n")
+    elif mode == "s":
+        # Search for existing collection
+        search = input("Enter Collection Name: ")
+        results = plex.library.search(title=search, libtype="collection")
 
-    # Search for existing collection
-    search = input("Enter Collection Name: ")
-    results = plex.library.search(title=search, libtype="collection")
-
-    if len(results) > 1:
-        selection = ""
-        while selection != "valid":
-            i = 1
-            for result in results:
-                print("{POS}) {TITLE} - {RATINGKEY}".format(POS=i, TITLE=result.title, RATINGKEY=result.ratingKey))
-                i += 1
-            selection = input("Select collections (N for None): ")
-            try:
-                selection = int(selection)
-                if len(results) >= selection > 0:
-                    result = results[selection - 1]
-                    selection = "valid"
-            except:
-                if selection == "N":
-                    print("Do This Later")
-                    sys.exit()
-    elif len(results) == 1:
-        print("Found {TITLE} - {RATINGKEY}".format(TITLE=results[0].title, RATINGKEY=results[0].ratingKey))
-        result = results[0]
-    else:
-        yn = input("Collection does not exist. Would you like to add it? (y/n): ")
-        if yn.upper() == "Y":
-            print("DO THIS LATER")
-            sys.exit()
+        if len(results) > 1:
+            selection = ""
+            while selection != "valid":
+                i = 1
+                for result in results:
+                    print("{POS}) {TITLE} - {RATINGKEY}".format(POS=i, TITLE=result.title, RATINGKEY=result.ratingKey))
+                    i += 1
+                selection = input("Select collections (N for None): ")
+                try:
+                    selection = int(selection)
+                    if len(results) >= selection > 0:
+                        result = results[selection - 1]
+                        selection = "valid"
+                except:
+                    if selection == "N":
+                        print("Do This Later")
+                        sys.exit()
+        elif len(results) == 1:
+            print("Found {TITLE} - {RATINGKEY}".format(TITLE=results[0].title, RATINGKEY=results[0].ratingKey))
+            result = results[0]
         else:
-            sys.exit()
-    print("{CHILDREN} Movies in collection".format(CHILDREN=len(result.children)))
-    for movie in result.children:
-        print(movie.year, "-", movie.title)
+            yn = input("Collection does not exist. Would you like to add it? (y/n): ")
+            if yn.upper() == "Y":
+                print("DO THIS LATER")
+            else:
+                print("DIDNT ADD")
+        print("{CHILDREN} Movies in collection".format(CHILDREN=len(result.children)))
+        for movie in result.children:
+            print(movie.year, "-", movie.title)
 
-
-run_database_sync()
