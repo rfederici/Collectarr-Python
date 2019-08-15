@@ -30,7 +30,7 @@ PLEX_LIBRARIES = config['server']['library'].split(',')
 
 def run_database_sync():
 
-    if (input("Update? (y/n): ") == "y"):
+    if input("Update? (y/n): ") == "y":
         config_update()
     print("\n")
     print("Modes: Actor(actor), IMDB List(iml), IMDB Movie Page(imp), Deletion mode(d)")
@@ -38,20 +38,20 @@ def run_database_sync():
 
     if mode == "actor":
         search = input("SEARCH ACTOR NAME: ")
-        plexActorID = search_actor_name(search)
-        add_collection("actor", plexActorID, search)
+        plex_actor_id = search_actor_name(search)
+        add_collection("actor", plex_actor_id, search)
     elif mode == "iml":
-        collectName = input("Enter Collection Name: ")
-        imdbListID = input("Enter IMDB List ID: ")
-        imdbListID = imdbListID.strip()
-        imdbMovies = imdb_get_movies(imdbListID)
-        add_collection("imdb-list", imdbMovies, collectName)
+        collect_name = input("Enter Collection Name: ")
+        imdb_list_id = input("Enter IMDB List ID: ")
+        imdb_list_id = imdb_list_id.strip()
+        imdb_movies = imdb_get_movies(imdb_list_id)
+        add_collection("imdb-list", imdb_movies, collect_name)
     elif mode == "imp":
-        imdbMovieID = input("Enter IMDB Movie ID")
+        imdb_movie_id = input("Enter IMDB Movie ID")
     elif mode == "d":
-        collectName = input("Enter Collection Name: ")
-        print("Searching for collection", collectName)
-        results = plex.library.search(title=collectName, libtype="collection")
+        collect_name = input("Search for Collection Name: ")
+        print("Searching for collection {name}...".format(name=collect_name))
+        results = plex.library.search(title=collect_name, libtype="collection")
         if results:
             if len(results) > 1:
                 selected_collection = None
@@ -59,22 +59,21 @@ def run_database_sync():
                     print("\n")
                     print("Multiple collections found")
                     for i, result in enumerate(results):
-                        print(i+1, ")", result.title)
+                        print("{pos}) {title}".format(pos=i+1, title=result.title))
                     choice = input("Select:")
                     try:
                         choice = int(choice)
-                        if choice <= i+1 and choice > 0:
+                        if i+1 >= choice > 0:
                             selected_collection = results[choice-1]
                     except:
                         print("Invalid entry")
             elif results:
                 selected_collection = results[0]
-            confirm = input("{} selected. Confirm deletion (y/n):".format(selected_collection.title))
+            confirm = input("{title} selected. Confirm deletion (y/n):".format(title=selected_collection.title))
             if confirm == "y":
                 selected_collection.delete()
                 print("Collection deleted")
                 print("\n")
-
 
     # Search for existing collection
     search = input("Enter Collection Name: ")
@@ -90,7 +89,7 @@ def run_database_sync():
             selection = input("Select collections (N for None): ")
             try:
                 selection = int(selection)
-                if selection <= len(results) and selection > 0:
+                if len(results) >= selection > 0:
                     result = results[selection - 1]
                     selection = "valid"
             except:
@@ -107,8 +106,7 @@ def run_database_sync():
             sys.exit()
         else:
             sys.exit()
-    movieCount = len(result.children)
-    print("{CHILDREN} Movies in collection".format(CHILDREN=movieCount))
+    print("{CHILDREN} Movies in collection".format(CHILDREN=len(result.children)))
     for movie in result.children:
         print(movie.year, "-", movie.title)
 

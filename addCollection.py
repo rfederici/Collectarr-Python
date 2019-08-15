@@ -2,7 +2,6 @@ from plexObjects import plex
 
 
 def add_collection(method, data, name=None, subfilters=None):
-
     # Add collection based on actors name
     if method == "actor":
         if not name:
@@ -17,7 +16,9 @@ def add_collection(method, data, name=None, subfilters=None):
                 except:
                     first_spot = []
                 if movie in first_spot:
-                    print(movie.title, "is already apart of collection", name)
+                    print("{movie_title} is already apart of collection \"{collection_name}\"".format(
+                        movie_title=movie.title,
+                        collection_name=name))
                 else:
                     filtered = False
                     if subfilters:
@@ -30,17 +31,20 @@ def add_collection(method, data, name=None, subfilters=None):
                                 if term in str(getattr(movie, filter_method)):
                                     match = True
                                 else:
-                                    fuck="shit"
+                                    fuck = "shit"
                         if match:
                             filtered = True
                     else:
-                        #add movies that didn't have subfilters applied
-                        print("+++ Adding", movie.title, "to collection", name)
+                        # add movies that didn't have subfilters applied
+                        print("+++ Adding {movie_title} to collection \"{collection_name}\"".format(
+                            movie_title=movie.title,
+                            collection_name=name))
                         movie.addCollection(name)
                     if filtered:
-                        print("+++ Adding", movie.title, "to collection", name)
+                        print("+++ Adding {movie_title} to collection \"{collection_name}\"".format(
+                            movie_title=movie.title,
+                            collection_name=name))
                         movie.addCollection(name)
-
 
     # Add collection based on imdb list url
     elif method == 'imdb-list':
@@ -51,7 +55,9 @@ def add_collection(method, data, name=None, subfilters=None):
             except:
                 first_spot = []
             if movie in first_spot:
-                print(movie.title, "is already apart of collection")
+                print("{movie_title} is already apart of collection \"{collection_name}\"".format(
+                    movie_title=movie.title,
+                    collection_name=name))
             else:
                 filtered = False
                 if subfilters:
@@ -66,9 +72,10 @@ def add_collection(method, data, name=None, subfilters=None):
                     if match:
                         filtered = True
                 else:
-                    print("+++ Adding", movie.title, "to collection", name)
+                    print("+++ Adding {movie_title} to collection \"{collection_name}\"".format(movie_title=movie.title,
+                                                                                                collection_name=name))
                     movie.addCollection(name)
                 if filtered:
-                    print("+++ Adding", movie.title, "to collection", name)
+                    print("+++ Adding {movie_title} to collection \"{collection_name}\"".format(movie_title=movie.title,
+                                                                                                collection_name=name))
                     movie.addCollection(name)
-

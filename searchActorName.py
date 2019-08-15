@@ -3,7 +3,6 @@ from plexObjects import plex
 
 def search_actor_name(search_term):
     search = search_term
-    SEARCH = search.upper().replace(" ", "-")
 
     # Format results
     movie_id = ""
@@ -24,5 +23,5 @@ def search_actor_name(search_term):
         role = str(role).split(":")
         actor_id = role[1]
         actor_name = role[2][:-1].upper()
-        if SEARCH == actor_name:
+        if search.upper().replace(" ", "-") == actor_name:
             return actor_id

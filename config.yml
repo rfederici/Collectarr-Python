@@ -1,6 +1,6 @@
 server:
-    url : https://plex.site.com
-    token : #####################
+    url : https://plex.irawrz.tv
+    token : "zkz3NgHqR4GHe_jCAe9M"
     library : Movies
 tmdb:
     apikey :

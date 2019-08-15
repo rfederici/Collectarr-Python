@@ -9,20 +9,23 @@ from plexObjects import plex
 config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.yml')
 config = yaml.load(open(config_path), Loader=yaml.FullLoader)
 
+
 def imdb_get_movies(data):
-    imdbURL = data
-    movieLibrary = plex.library.section("Movies")
+    imdb_url = data
+    # movieLibrary = plex.library.section("Movies")
     library_language = plex.library.section("Movies").language
-    r = requests.get(imdbURL, headers={'Accept-Language': library_language})
+    r = requests.get(imdb_url, headers={'Accept-Language': library_language})
     tree = html.fromstring(r.content)
-    title_name = tree.xpath("//div[contains(@class, 'lister-item-content')]//h3[contains(@class, 'lister-item-header')]//a/text()")
-    title_years = tree.xpath("//div[contains(@class, 'lister-item-content')]//h3[contains(@class, 'lister-item-header')]//span[contains(@class, 'lister-item-year')]/text()")
+    title_name = tree.xpath("//div[contains(@class, 'lister-item-content')]//h3[contains(@class, "
+                            "'lister-item-header')]//a/text()")
+    title_years = tree.xpath("//div[contains(@class, 'lister-item-content')]//h3[contains(@class, "
+                             "'lister-item-header')]//span[contains(@class, 'lister-item-year')]/text()")
     title_ids = tree.xpath("//div[contains(@class, 'lister-item-image')]//a/img//@data-tconst")
     tmdb = TMDb()
     tmdb.api_key = config['tmdb']['apikey']
     movie = Movie()
     imdb_map = {}
-    matchedMovies = []
+    matched_movies = []
     for m in plex.library.section("Movies").all():
         if 'themoviedb://' in m.guid:
             if not tmdb.api_key == "None":
@@ -41,5 +44,5 @@ def imdb_get_movies(data):
         else:
             imdb_map[m.ratingKey] = m
         if imdb_id in title_ids:
-            matchedMovies.append(m)
-    return matchedMovies
+            matched_movies.append(m)
+    return matched_movies
