@@ -1,6 +1,6 @@
 server:
-    url : https://plex.irawrz.tv
-    token : "zkz3NgHqR4GHe_jCAe9M"
+    url : http://192.168.1.235:32400
+    token : ######################
     library : Movies
 tmdb:
     apikey :
