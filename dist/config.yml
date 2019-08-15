@@ -1,0 +1,18 @@
+server:
+    url : https://plex.irawrz.tv
+    token : "zkz3NgHqR4GHe_jCAe9M"
+    library : Movies
+tmdb:
+    apikey :
+collections :
+    ATestCollection :
+        imdb-list : https://www.imdb.com/list/ls068177081/
+        actor: James Franco
+        subfilters :
+            genres : Sci-Fi
+            year : 2002, 2008
+    Titans:
+       imdb-list : https://www.imdb.com/list/ls000683155/
+    Top Horror Movies (2000-2018):
+        imdb-list : https://www.imdb.com/list/ls059633855/
+        imdb-list : https://www.imdb.com/list/ls055451907/
